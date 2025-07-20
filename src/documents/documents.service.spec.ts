@@ -10,18 +10,25 @@ describe('DocumentsService', () => {
   let repo: Repository<Document>;
 
   beforeEach(async () => {
+    const mockRepo: jest.Mocked<Partial<Repository<Document>>> = {
+      create: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn(),
+      delete: jest.fn(),
+    };
+  
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DocumentsService,
         {
           provide: getRepositoryToken(Document),
-          useClass: Repository,
+          useValue: mockRepo, // <-- Important fix
         },
       ],
     }).compile();
-
+  
     service = module.get<DocumentsService>(DocumentsService);
-    repo = module.get<Repository<Document>>(getRepositoryToken(Document));
+    repo = module.get(getRepositoryToken(Document));
   });
 
   it('should be defined', () => {

@@ -10,19 +10,28 @@ describe('UsersService', () => {
   let repo: Repository<User>;
 
   beforeEach(async () => {
+    const mockRepo: jest.Mocked<Partial<Repository<User>>> = {
+      create: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn(),
+      findOneBy: jest.fn(), 
+      delete: jest.fn(),
+    };
+  
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         {
           provide: getRepositoryToken(User),
-          useClass: Repository,
+          useValue: mockRepo, // ✅ inject mock, not actual class
         },
       ],
     }).compile();
-
+  
     service = module.get<UsersService>(UsersService);
-    repo = module.get<Repository<User>>(getRepositoryToken(User));
+    repo = module.get(getRepositoryToken(User));
   });
+  
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -36,9 +45,12 @@ describe('UsersService', () => {
   });
 
   it('should find user by email', async () => {
-    const findSpy = jest.spyOn(repo, 'findOneBy').mockResolvedValue({} as any);
-    await service.findByEmail('test@example.com');
-    expect(findSpy).toHaveBeenCalledWith({ email: 'test@example.com' });
+    const mockUser = { id: 1, email: 'test@example.com' } as User;
+    (repo.findOneBy as jest.Mock).mockResolvedValue(mockUser); // ✅
+  
+    const result = await service.findByEmail('test@example.com');
+    expect(repo.findOneBy).toHaveBeenCalledWith({ email: 'test@example.com' });
+    expect(result).toEqual(mockUser);
   });
 
   it('should return all users', async () => {
