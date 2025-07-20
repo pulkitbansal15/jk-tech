@@ -5,10 +5,11 @@ export class IngestionService {
   private isRunning = false;
 
   startIngestion(): string {
+    // moking an ingestion process for 10 seconds
     this.isRunning = true;
     setTimeout(() => {
       this.isRunning = false;
-    }, 3000);
+    }, 10000);
     return 'Ingestion started';
   }
 

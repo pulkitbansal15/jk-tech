@@ -6,11 +6,20 @@ import { User } from '../users/user.entity';
 
 @Injectable()
 export class DocumentsService {
-  constructor(@InjectRepository(Document) private repo: Repository<Document>) {}
+  constructor(@InjectRepository(Document) private repo: Repository<Document>) { }
 
   async upload(title: string, path: string, user: User): Promise<Document> {
-    const doc = this.repo.create({ title, filePath: path, uploadedBy: user });
-    return this.repo.save(doc);
+    try {
+      const doc: Document = this.repo.create({
+        title,
+        filePath: path,
+        uploadedBy: { id: user?.['userId'] },
+      });
+      return await this.repo.save(doc);
+    } catch (e) {
+      console.error('Upload failed:', e);
+      throw e;
+    }
   }
 
   async findAll(): Promise<Document[]> {

@@ -1,19 +1,24 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
+import { UsersDto } from '../users/users.dto';
+import { User } from '../users/user.entity';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService, private usersService: UsersService) {}
 
   @Post('register')
-  register(@Body() body: { email: string; password: string; role?: string }) {
-    return this.usersService.createUser(body.email, body.password, body.role as 'viewer' | 'admin' | 'editor' | undefined);
+  register(@Body(new ValidationPipe()) body: UsersDto) {
+    //create users with different roles
+    return this.usersService.createUser(body);
 }
 
   @Post('login')
-  async login(@Body() body: { email: string; password: string }) {
-    const user = await this.authService.validate(body.email, body.password);
+  async login(@Body(new ValidationPipe()) body: UsersDto) {
+    //login a particular user by providing a jwt token
+    //for now the token has no expiry time
+    const user: User = await this.authService.validate(body?.email, body?.password);
     return this.authService.login(user);
   }
 }

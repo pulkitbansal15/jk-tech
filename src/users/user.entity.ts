@@ -1,4 +1,3 @@
-// user.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export type UserRole = 'admin' | 'editor' | 'viewer';
@@ -15,5 +14,5 @@ export class User {
   password: string;
 
   @Column({ default: 'viewer' })
-  role: UserRole; // This line is important
+  role: UserRole;
 }

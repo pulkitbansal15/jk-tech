@@ -12,12 +12,16 @@ export class IngestionController {
   @Roles('editor')
   @Post('start')
   start() {
+    // starts the ingestion process
     return { message: this.ingestionService.startIngestion() };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('status')
   status() {
+    // give the status of ingestion process
+    // will return Ingestion in progress if the ingestion is started and
+    // return Idle if the process is not started 
     return { status: this.ingestionService.getStatus() };
   }
 }
