@@ -3,6 +3,8 @@ version: '3.8'
 services:
   db:
     image: postgres:15
+    container_name: jktech-db
+    restart: always
     environment:
       POSTGRES_DB: jktech
       POSTGRES_USER: postgres
@@ -11,21 +13,24 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   app:
+    container_name: jktech-app
     build: .
     command: npm run start:prod
+    restart: always
     ports:
       - "3000:3000"
-    environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: password
-      DATABASE_NAME: jktech
-      JWT_SECRET: secret
+    env_file:
+      - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
