@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/user.entity';
 
